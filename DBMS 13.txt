@@ -1,0 +1,65 @@
+//[13] Write PL/SQL block to implement Curser to calculate grade of minimum 10 students.
+CREATE TABLE students (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(50),
+    grade VARCHAR(2)
+);
+
+INSERT INTO students (name) VALUES
+    ('Rahul'),
+    ('Priya'),
+    ('Amit'),
+    ('Sneha'),
+    ('Nikhil'),
+    ('Anjali'),
+    ('Ravi'),
+    ('Suman'),
+    ('Arjun'),
+    ('Pooja');
+DELIMITER //
+
+CREATE PROCEDURE calculate_grades()
+BEGIN
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE student_name VARCHAR(50);
+    DECLARE student_grade VARCHAR(2);
+
+    -- Declare cursor
+    DECLARE students_cursor CURSOR FOR
+        SELECT name, grade FROM students;
+
+    -- Declare continue handler
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+
+    -- Open cursor
+    OPEN students_cursor;
+
+    -- Loop through the cursor
+    grade_loop: LOOP
+        FETCH students_cursor INTO student_name, student_grade;
+        IF done THEN
+            LEAVE grade_loop;
+        END IF;
+
+        -- Perform grade calculation based on your criteria
+        -- Here, we'll assume a simple condition where grades are assigned based on average marks
+        IF student_grade >= 90 THEN
+            UPDATE students SET grade = 'A+' WHERE name = student_name;
+        ELSEIF student_grade >= 80 THEN
+            UPDATE students SET grade = 'A' WHERE name = student_name;
+        ELSEIF student_grade >= 70 THEN
+            UPDATE students SET grade = 'B' WHERE name = student_name;
+        ELSEIF student_grade >= 60 THEN
+            UPDATE students SET grade = 'C' WHERE name = student_name;
+        ELSE
+            UPDATE students SET grade = 'D' WHERE name = student_name;
+        END IF;
+    END LOOP;
+
+    -- Close cursor
+    CLOSE students_cursor;
+END//
+
+DELIMITER ;
+
+CALL calculate_grades();

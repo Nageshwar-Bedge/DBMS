@@ -1,0 +1,24 @@
+CREATE TABLE Pet (
+  pet_name VARCHAR(50),
+  owner VARCHAR(50),
+  sex CHAR(1),
+  birth_date DATE,
+  death_date DATE
+);
+
+INSERT INTO Pet (pet_name, owner, sex, birth_date, death_date)
+VALUES
+  ('Sheru', 'Ramesh Kumar', 'M', '2018-05-12', NULL),
+  ('Champak', 'Sunita Devi', 'F', '2020-02-03', NULL),
+  ('Milo', 'Amit Sharma', 'M', '2019-09-22', NULL),
+  ('Kali', 'Rajesh Gupta', 'F', '2021-01-10', NULL),
+  ('Moti', 'Meena Patel', 'M', '2017-11-27', NULL),
+  ('Golu', 'Deepak Verma', 'M', '2016-08-15', NULL),
+  ('Sona', 'Anjali Singh', 'F', '2022-04-18', NULL),
+  ('Lucky', 'Pooja Yadav', 'F', '2020-12-05', NULL);
+
+SELECT * FROM Pet;
+SELECT * FROM Pet ORDER BY birth_date ASC;
+SELECT * FROM Pet ORDER BY birth_date DESC;
+SELECT * FROM Pet WHERE owner = 'Rajesh Gupta';
+SELECT birth_date, COUNT(*) AS count FROM Pet GROUP BY birth_date;

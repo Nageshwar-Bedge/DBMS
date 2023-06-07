@@ -1,0 +1,107 @@
+-- Create tables
+CREATE TABLE Course (
+  coursecode INT PRIMARY KEY,
+  coursename VARCHAR(50),
+  syllabus TEXT
+);
+
+CREATE TABLE Batch (
+  batchcode INT PRIMARY KEY,
+  coursecode INT,
+  startingdate DATE,
+  duration INT,
+  coursefees DECIMAL(10, 2),
+  netincome DECIMAL(10, 2),
+  expectedincome DECIMAL(10, 2),
+  FOREIGN KEY (coursecode) REFERENCES Course(coursecode)
+);
+
+CREATE TABLE Enquiry (
+  enquirynumber INT PRIMARY KEY,
+  fname VARCHAR(50),
+  lname VARCHAR(50),
+  coursecode INT,
+  plotno VARCHAR(20),
+  street VARCHAR(50),
+  city VARCHAR(50),
+  phone VARCHAR(20),
+  enquirydate DATE,
+  enquirystatus VARCHAR(20),
+  FOREIGN KEY (coursecode) REFERENCES Course(coursecode)
+);
+
+CREATE TABLE Enrollment (
+  rollno INT PRIMARY KEY,
+  enquirynumber INT,
+  batchcode INT,
+  enrollmentdate DATE,
+  FOREIGN KEY (enquirynumber) REFERENCES Enquiry(enquirynumber),
+  FOREIGN KEY (batchcode) REFERENCES Batch(batchcode)
+);
+
+-- Insert data into tables
+INSERT INTO Course (coursecode, coursename, syllabus)
+VALUES
+  (10, 'Computer Science', 'Introduction to Programming'),
+  (20, 'Web Development', 'HTML, CSS, JavaScript'),
+  (30, 'Data Science', 'Python, Machine Learning');
+
+INSERT INTO Batch (batchcode, coursecode, startingdate, duration, coursefees, netincome, expectedincome)
+VALUES
+  (1, 10, '2023-01-01', 12, 50000, 48000, 52000),
+  (2, 20, '2023-02-15', 8, 45000, 46000, 48000),
+  (3, 30, '2023-03-10', 10, 60000, 55000, 63000);
+
+INSERT INTO Enquiry (enquirynumber, fname, lname, coursecode, plotno, street, city, phone, enquirydate, enquirystatus)
+VALUES
+  (1, 'John', 'Doe', 10, '123', 'Main St', 'CityA', '1234567890', '2023-01-15', 'Pending'),
+  (2, 'Jane', 'Smith', 20, '456', 'First Ave', 'CityB', '9876543210', '2023-02-01', 'Approved'),
+  (3, 'Sam', 'Johnson', 10, '789', 'Oak St', 'CityC', '1112223333', '2023-03-05', 'Rejected');
+
+INSERT INTO Enrollment (rollno, enquirynumber, batchcode, enrollmentdate)
+VALUES
+  (1001, 1, 1, '2023-01-20'),
+  (1002, 2, 2, '2023-02-10'),
+  (1003, 3, 1, '2023-03-15');
+
+
+SELECT *
+FROM Batch
+WHERE coursecode = 10;
+
+SELECT batchcode
+FROM Batch
+WHERE expectedincome > netincome + 2000;
+
+SELECT Course.coursename, Batch.startingdate
+FROM Course
+JOIN Batch ON Course.coursecode = Batch.coursecode;
+
+SELECT coursename
+FROM Course
+WHERE coursecode IN (
+  SELECT coursecode
+  FROM Batch
+  WHERE coursefees > 50000
+);
+
+
+SELECT *
+FROM Batch
+WHERE coursecode = (
+  SELECT coursecode
+  FROM Course
+  WHERE coursename = 'Computer Science'
+);
+
+SELECT COUNT(*)
+FROM Enquiry
+WHERE fname LIKE 'S%';
+
+DELETE FROM Enquiry
+WHERE coursecode = (
+  SELECT coursecode
+  FROM Course
+  WHERE coursename = 'Web Development'
+);
+

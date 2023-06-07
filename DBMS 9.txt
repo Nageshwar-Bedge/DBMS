@@ -1,0 +1,78 @@
+CREATE TABLE Customer (
+  Cust_no INT PRIMARY KEY,
+  name VARCHAR(50) NOT NULL,
+  Street VARCHAR(100),
+  city VARCHAR(50),
+  state VARCHAR(50)
+);
+
+CREATE TABLE Order (
+  Order_no INT PRIMARY KEY,
+  Cust_no INT NOT NULL,
+  Order_date DATE,
+  Ship_date DATE,
+  Tocity VARCHAR(50),
+  ToState VARCHAR(50),
+  ToZip VARCHAR(10),
+  FOREIGN KEY (Cust_no) REFERENCES Customer(Cust_no)
+);
+
+CREATE TABLE Contains (
+  Order_no INT,
+  Stock_no INT,
+  quantity INT,
+  Discount DECIMAL(10, 2),
+  PRIMARY KEY (Order_no, Stock_no),
+  FOREIGN KEY (Order_no) REFERENCES Order(Order_no),
+  FOREIGN KEY (Stock_no) REFERENCES Stock(Stock_no)
+);
+
+CREATE TABLE Stock (
+  Stock_no INT PRIMARY KEY,
+  price DECIMAL(10, 2),
+  tax DECIMAL(10, 2)
+);
+
+-- Insert data into the Customer table
+INSERT INTO Customer (Cust_no, name, Street, city, state)
+VALUES
+  (101, 'Rahul Sharma', '123 ABC Street', 'Delhi', 'Delhi'),
+  (102, 'Priya Patel', '456 XYZ Street', 'Mumbai', 'Maharashtra'),
+  (103, 'Amit Singh', '789 PQR Street', 'Kolkata', 'West Bengal');
+
+-- Insert data into the Order table
+INSERT INTO Order (Order_no, Cust_no, Order_date, Ship_date, Tocity, ToState, ToZip)
+VALUES
+  (1, 101, '2023-05-01', '2023-05-05', 'Mumbai', 'Maharashtra', '400001'),
+  (2, 102, '2023-05-02', '2023-05-06', 'Delhi', 'Delhi', '110001'),
+  (3, 103, '2023-05-03', '2023-05-07', 'Chennai', 'Tamil Nadu', '600001');
+
+-- Insert data into the Contains table
+INSERT INTO Contains (Order_no, Stock_no, quantity, Discount)
+VALUES
+  (1, 101, 5, 0.1),
+  (1, 102, 3, 0.05),
+  (2, 103, 2, 0.15);
+
+-- Insert data into the Stock table
+INSERT INTO Stock (Stock_no, price, tax)
+VALUES
+  (101, 10.99, 0.05),
+  (102, 15.99, 0.07),
+  (103, 7.99, 0.03);
+
+
+CREATE VIEW OrderView AS
+SELECT Order_no, Cust_no
+FROM Order;
+
+SELECT c.name, c.city, o.Order_no, o.Order_date
+FROM Customer c
+JOIN Order o ON c.Cust_no = o.Cust_no
+WHERE c.Cust_no = 101;
+
+SELECT price, Discount
+FROM Stock s
+JOIN Contains c ON s.Stock_no = c.Stock_no
+WHERE s.Stock_no = 102;
+

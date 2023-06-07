@@ -1,0 +1,47 @@
+/*[14] Write a database trigger on Library table. The System should keep track of the records that
+are being updated or deleted. The old value of updated or deleted records should be added in
+Library_Audit table.*/
+-- Create the Library table
+CREATE TABLE Library (
+  record_id INT AUTO_INCREMENT PRIMARY KEY,
+  book_title VARCHAR(100),
+  author VARCHAR(100),
+  status VARCHAR(20),
+  location VARCHAR(100)
+);
+
+-- Create the Library_Audit table
+CREATE TABLE Library_Audit (
+  audit_id INT AUTO_INCREMENT PRIMARY KEY,
+  record_id INT,
+  action VARCHAR(10),
+  book_title VARCHAR(100),
+  author VARCHAR(100),
+  old_status VARCHAR(20),
+  old_location VARCHAR(100),
+  timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create the trigger on the Library table
+DELIMITER //
+
+CREATE TRIGGER library_audit_trigger
+AFTER UPDATE ON Library
+FOR EACH ROW
+BEGIN
+  -- For update operation, insert the old values into Library_Audit table
+  IF OLD.book_title <> NEW.book_title OR OLD.author <> NEW.author OR OLD.status <> NEW.status OR OLD.location <> NEW.location THEN
+    INSERT INTO Library_Audit (record_id, action, book_title, author, old_status, old_location)
+    VALUES (OLD.record_id, 'UPDATED', OLD.book_title, OLD.author, OLD.status, OLD.location);
+  END IF;
+  
+  
+END;
+//
+
+DELIMITER ;
+
+-- Insert some sample data into the Library table
+INSERT INTO Library (book_title, author, status, location)
+VALUES ('Book 1', 'Author 1', 'Available', 'Shelf A'),
+       ('Book 2', 'Author 2', 'Checked Out', 'Shelf B');
